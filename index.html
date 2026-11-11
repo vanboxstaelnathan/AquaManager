@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1720">
+<title>AquaManager</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{--bg:#0b1720;--panel:#132631;--panel2:#1a3440;--line:#294652;--txt:#edf7f5;--muted:#9bb5b8;--aqua:#55d6c2;--blue:#68b9e8;--orange:#ffbd69;--red:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#0b1720,#10242c);color:var(--txt);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding-bottom:90px}
+header{padding:calc(18px + env(safe-area-inset-top)) 18px 16px;position:sticky;top:0;background:#0b1720ed;backdrop-filter:blur(14px);z-index:5;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:21px}.logo{width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#55d6c2,#238ca8);display:grid;place-items:center;color:#09212a;font-size:21px}
+.sub{color:var(--muted);font-size:12px;margin:5px 0 0 46px}
+main{max-width:760px;margin:auto;padding:16px}
+h1{font-size:24px;margin:4px 0 5px}h2{font-size:17px;margin:0 0 12px}.muted{color:var(--muted)}.small{font-size:12px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.stack{display:grid;gap:12px}
+.card{background:linear-gradient(145deg,var(--panel),#11232d);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:12px}
+.hero{background:linear-gradient(130deg,#174451,#142d3a 65%,#1a3a42);overflow:hidden;position:relative}
+.hero:after{content:"";position:absolute;width:150px;height:150px;border-radius:50%;right:-50px;top:-50px;background:#55d6c21c}
+.pill{font-size:11px;border:1px solid #4b7b7d;color:#b9eee5;border-radius:30px;padding:5px 9px;white-space:nowrap}
+button{border:0;border-radius:12px;background:var(--aqua);color:#08232a;font-weight:750;padding:11px 14px;font-size:14px;cursor:pointer}
+button.secondary{background:var(--panel2);color:var(--txt);border:1px solid var(--line)}
+button.danger{background:#49272b;color:#ffc3c3;border:1px solid #78434a}
+button.icon{padding:8px 10px;background:var(--panel2);color:var(--txt)}
+.tabs{display:flex;gap:7px;overflow:auto;padding:2px 0 13px;scrollbar-width:none}.tabs button{white-space:nowrap;background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 12px}.tabs button.active{background:var(--aqua);color:#08232a;border-color:var(--aqua)}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.metric{background:#0d202a;border:1px solid var(--line);border-radius:13px;padding:11px}.metric label{display:block;color:var(--muted);font-size:11px}.metric strong{display:block;font-size:20px;margin-top:5px}
+input,select,textarea{width:100%;background:#0b1c25;border:1px solid var(--line);border-radius:11px;color:var(--txt);padding:12px;font:inherit;min-width:0}
+label{display:block;color:var(--muted);font-size:12px;margin:10px 0 6px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.formgrid .full{grid-column:1/-1}
+.listitem{padding:12px 0;border-top:1px solid var(--line)}.listitem:first-child{border-top:0}
+.status{font-size:11px;border-radius:20px;padding:5px 8px;background:#193e3a;color:#9ce6d5}.status.warn{background:#493c27;color:#ffd28f}.status.late{background:#49272b;color:#ffaaaa}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:8;background:#0b1720f2;border-top:1px solid var(--line);padding:9px 8px calc(9px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;backdrop-filter:blur(16px)}
+nav button{background:transparent;color:var(--muted);padding:7px 10px;font-size:11px;display:grid;gap:3px;justify-items:center}nav button span{font-size:19px}nav button.active{color:var(--aqua)}
+.hidden{display:none!important}.empty{text-align:center;padding:22px;color:var(--muted)}
+.bar{height:7px;border-radius:10px;background:#203a45;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--aqua);border-radius:10px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}
+@media(min-width:600px){main{padding:24px}.metrics{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">≈</div>AquaManager</div><div class="sub">Le carnet de santé de tes aquariums</div></header>
+<main>
+<section id="view-home">
+  <div class="row"><div><h1>Bonjour 👋</h1><div class="muted small">Voici l'état de tes aquariums</div></div><button onclick="openAquariumForm()">＋ Ajouter</button></div>
+  <div id="overview" class="stack" style="margin-top:16px"></div>
+  <div class="card"><div class="row"><h2>À faire prochainement</h2><span class="pill" id="task-count">0 tâche</span></div><div id="upcoming"></div></div>
+</section>
+<section id="view-aquariums" class="hidden"><div class="row"><div><h1>Mes aquariums</h1><div class="muted small">Tous tes bacs au même endroit</div></div><button onclick="openAquariumForm()">＋ Ajouter</button></div><div id="aquarium-list" style="margin-top:14px"></div></section>
+<section id="view-detail" class="hidden"><div id="detail-content"></div></section>
+<section id="view-tasks" class="hidden"><div class="row"><div><h1>Entretiens</h1><div class="muted small">Planning et historique</div></div><button onclick="openTaskForm()">＋ Tâche</button></div><div id="task-list" style="margin-top:14px"></div></section>
+<section id="view-settings" class="hidden"><h1>Réglages & sauvegarde</h1><div class="card"><h2>Exporter tes données</h2><p class="muted small">Télécharge une sauvegarde JSON de tes aquariums, mesures et entretiens.</p><button onclick="exportData()">Exporter la sauvegarde</button></div><div class="card"><h2>Importer une sauvegarde</h2><label>Fichier JSON</label><input type="file" id="import-file" accept=".json,application/json"><button style="margin-top:10px" onclick="importData()">Importer</button></div><div class="card"><h2>À propos</h2><p class="muted small">AquaManager MVP · Données stockées sur cet appareil. Pas de compte, pas de synchronisation cloud dans cette version.</p><button class="secondary" onclick="seedDemo()">Restaurer les données de démonstration</button></div></section>
+</main>
+<nav>
+<button class="active" data-view="home" onclick="go('home')"><span>⌂</span>Accueil</button>
+<button data-view="aquariums" onclick="go('aquariums')"><span>◉</span>Aquariums</button>
+<button data-view="tasks" onclick="go('tasks')"><span>✓</span>Entretiens</button>
+<button data-view="settings" onclick="go('settings')"><span>⚙</span>Réglages</button>
+</nav>
+<div id="modal" class="hidden" style="position:fixed;inset:0;background:#000a;z-index:20;overflow:auto;padding:18px">
+ <div class="card" style="max-width:560px;margin:35px auto;background:#132631">
+  <div class="row"><h2 id="modal-title">Ajouter</h2><button class="icon" onclick="closeModal()">✕</button></div>
+  <div id="modal-body"></div>
+ </div>
+</div>
+<script>
+const KEY='aquamanager_v1';
+const today=()=>new Date().toISOString().slice(0,10);
+let state;
+function demo(){return {aquariums:[{id:'fresh60',name:'Aquarium 60 L',volume:60,type:'Eau douce',style:'Aquascaping',created:today(),notes:'Sol technique Amazonia Ver.2',measurements:[{date:'2026-11-06',gh:'8',kh:'2',ph:'6.4',no3:'3',no2:'< 0,025',nh4:'0,6',po4:'',temp:''}]}],tasks:[{id:'t1',aquariumId:'fresh60',title:'Changement d’eau',due:today(),repeat:'7',done:false,notes:'Préparer le mélange eau osmosée / robinet'},{id:'t2',aquariumId:'fresh60',title:'Contrôle des paramètres',due:today(),repeat:'7',done:false,notes:''},{id:'t3',aquariumId:'fresh60',title:'Taille des plantes',due:today(),repeat:'14',done:false,notes:''}],population:[],plants:[]}}
+function load(){try{state=JSON.parse(localStorage.getItem(KEY))||demo()}catch(e){state=demo()}save()}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function aq(id){return state.aquariums.find(a=>a.id===id)}
+function go(view){document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));document.getElementById('view-'+view).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===view));render()}
+function render(){renderHome();renderAquariums();renderTasks()}
+function latest(a){return (a.measurements||[]).slice().sort((x,y)=>y.date.localeCompare(x.date))[0]||{}}
+function renderHome(){
+ const box=document.getElementById('overview');
+ box.innerHTML=state.aquariums.length?state.aquariums.map(a=>{let m=latest(a);return `<div class="card hero"><div class="row"><div><div class="pill">${esc(a.type)}</div><h2 style="margin:10px 0 3px">${esc(a.name)}</h2><div class="muted small">${a.volume} litres · ${esc(a.style||'')}</div></div><button class="secondary" onclick="showDetail('${a.id}')">Ouvrir →</button></div><div class="metrics" style="margin-top:15px">${metric('pH',m.ph||'—')}${metric('GH',m.gh||'—')}${metric('KH',m.kh||'—')}${metric('NO3',m.no3||'—')}</div><div class="muted small" style="margin-top:10px">Dernière mesure : ${m.date?fmt(m.date):'Aucune mesure'}</div></div>`}).join(''):'<div class="card empty">Aucun aquarium. Ajoute ton premier bac pour commencer.</div>';
+ const pending=state.tasks.filter(t=>!t.done).sort((a,b)=>a.due.localeCompare(b.due));document.getElementById('task-count').textContent=pending.length+' tâche(s)';
+ document.getElementById('upcoming').innerHTML=pending.length?pending.slice(0,4).map(t=>taskHTML(t,false)).join(''):'<div class="empty">Tout est à jour 🎉</div>';
+}
+function metric(k,v){return `<div class="metric"><label>${k}</label><strong>${esc(v)}</strong></div>`}
+function renderAquariums(){document.getElementById('aquarium-list').innerHTML=state.aquariums.length?state.aquariums.map(a=>`<div class="card"><div class="row"><div><h2>${esc(a.name)}</h2><div class="muted small">${a.volume} L · ${esc(a.type)} · ${esc(a.style||'')}</div></div><button onclick="showDetail('${a.id}')">Détails</button></div></div>`).join(''):'<div class="card empty">Aucun aquarium enregistré.</div>'}
+function showDetail(id){let a=aq(id);if(!a)return;go('detail');let m=latest(a);document.getElementById('detail-content').innerHTML=`<button class="secondary" onclick="go('aquariums')">← Mes aquariums</button><div class="row" style="margin:14px 0"><div><h1>${esc(a.name)}</h1><div class="muted small">${a.volume} L · ${esc(a.type)}</div></div><button class="icon" onclick="editAquarium('${id}')">✎</button></div><div class="card"><div class="row"><h2>Dernières mesures</h2><button onclick="openMeasureForm('${id}')">＋ Mesure</button></div><div class="metrics">${['gh','kh','ph','no3','no2','nh4','po4','temp'].map(k=>metric(k.toUpperCase(),m[k]||'—')).join('')}</div><p class="muted small">Mesure du ${m.date?fmt(m.date):'—'}</p></div><div class="card"><div class="row"><h2>Historique des mesures</h2><span class="pill">${(a.measurements||[]).length} relevé(s)</span></div>${(a.measurements||[]).slice().sort((x,y)=>y.date.localeCompare(x.date)).map(x=>`<div class="listitem"><div class="row"><b>${fmt(x.date)}</b><button class="icon" onclick="deleteMeasure('${id}','${x.date}')">✕</button></div><div class="muted small">GH ${esc(x.gh||'—')} · KH ${esc(x.kh||'—')} · pH ${esc(x.ph||'—')} · NO3 ${esc(x.no3||'—')} · NO2 ${esc(x.no2||'—')} · NH4 ${esc(x.nh4||'—')} · PO4 ${esc(x.po4||'—')} · T° ${esc(x.temp||'—')}</div></div>`).join('')||'<div class="empty">Pas encore de mesures.</div>'}</div><div class="card"><h2>Informations</h2><p class="muted small">${esc(a.notes||'Aucune note')}</p><button class="danger" onclick="deleteAquarium('${id}')">Supprimer cet aquarium</button></div>`}
+function renderTasks(){let list=document.getElementById('task-list');let tasks=state.tasks.slice().sort((a,b)=>(a.done-b.done)||a.due.localeCompare(b.due));list.innerHTML=tasks.length?tasks.map(t=>taskHTML(t,true)).join(''):'<div class="card empty">Aucun entretien planifié.</div>'}
+function taskHTML(t,full){let a=aq(t.aquariumId),late=!t.done&&t.due<today();return `<div class="listitem"><div class="row"><div style="flex:1"><b>${esc(t.title)}</b><div class="muted small">${esc(a?.name||'Aquarium supprimé')} · ${fmt(t.due)}${t.repeat?' · Tous les '+t.repeat+' jours':''}</div></div><span class="status ${t.done?'':late?'late':'warn'}">${t.done?'Terminé':late?'En retard':'À faire'}</span></div>${t.notes?`<div class="muted small" style="margin-top:5px">${esc(t.notes)}</div>`:''}<div class="row" style="margin-top:9px">${!t.done?`<button onclick="completeTask('${t.id}')">✓ Terminé</button>`:`<button class="secondary" onclick="undoTask('${t.id}')">Annuler</button>`}${full?`<button class="icon" onclick="deleteTask('${t.id}')">✕</button>`:''}</div></div>`}
+function fmt(d){return new Date(d+'T12:00:00').toLocaleDateString('fr-BE',{day:'2-digit',month:'short',year:'numeric'})}
+function modal(title,body){document.getElementById('modal-title').textContent=title;document.getElementById('modal-body').innerHTML=body;document.getElementById('modal').classList.remove('hidden')}
+function closeModal(){document.getElementById('modal').classList.add('hidden')}
+function openAquariumForm(id){let a=id?aq(id):{};modal(id?'Modifier aquarium':'Nouvel aquarium',`<form onsubmit="saveAquarium(event,'${id||''}')"><label>Nom</label><input name="name" required value="${esc(a.name||'')}" placeholder="Ex. Aquarium 300 L"><div class="formgrid"><div><label>Volume (L)</label><input name="volume" type="number" min="1" required value="${a.volume||''}"></div><div><label>Type</label><select name="type"><option ${a.type==='Eau douce'?'selected':''}>Eau douce</option><option ${a.type==='Récifal'?'selected':''}>Récifal</option><option ${a.type==='Eau saumâtre'?'selected':''}>Eau saumâtre</option></select></div><div class="full"><label>Style / biotope</label><input name="style" value="${esc(a.style||'')}" placeholder="Aquascaping, communautaire..."></div><div class="full"><label>Notes</label><textarea name="notes" rows="2">${esc(a.notes||'')}</textarea></div></div><button style="margin-top:15px;width:100%">Enregistrer</button></form>`)}
+function saveAquarium(e,id){e.preventDefault();let f=new FormData(e.target),obj={id:id||crypto.randomUUID(),name:f.get('name'),volume:Number(f.get('volume')),type:f.get('type'),style:f.get('style'),notes:f.get('notes'),measurements:id?aq(id).measurements:[]};if(id)state.aquariums=state.aquariums.map(a=>a.id===id?obj:a);else state.aquariums.push(obj);save();closeModal();render();if(id)showDetail(id)}
+function editAquarium(id){openAquariumForm(id)}
+function deleteAquarium(id){if(!confirm('Supprimer cet aquarium et ses mesures ? Les entretiens associés seront conservés.'))return;state.aquariums=state.aquariums.filter(a=>a.id!==id);save();go('aquariums')}
+function openMeasureForm(id){let m={};modal('Ajouter une mesure',`<form onsubmit="saveMeasure(event,'${id}')"><label>Date du relevé</label><input type="date" name="date" value="${today()}" required><div class="formgrid">${[['gh','GH (°dGH)'],['kh','KH (°dKH)'],['ph','pH'],['no3','NO3 (mg/L)'],['no2','NO2 (mg/L)'],['nh4','NH4 (mg/L)'],['po4','PO4 (mg/L)'],['temp','Température (°C)']].map(([k,l])=>`<div><label>${l}</label><input name="${k}" inputmode="decimal" placeholder="—"></div>`).join('')}</div><button style="margin-top:15px;width:100%">Enregistrer les mesures</button></form>`)}
+function saveMeasure(e,id){e.preventDefault();let f=new FormData(e.target),m={};['date','gh','kh','ph','no3','no2','nh4','po4','temp'].forEach(k=>m[k]=f.get(k));let a=aq(id);a.measurements=a.measurements.filter(x=>x.date!==m.date);a.measurements.push(m);save();closeModal();showDetail(id)}
+function deleteMeasure(id,date){if(!confirm('Supprimer ce relevé ?'))return;let a=aq(id);a.measurements=a.measurements.filter(m=>m.date!==date);save();showDetail(id)}
+function openTaskForm(){if(!state.aquariums.length){alert('Ajoute d’abord un aquarium.');return}modal('Nouvel entretien',`<form onsubmit="saveTask(event)"><label>Aquarium</label><select name="aquariumId">${state.aquariums.map(a=>`<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select><label>Nom de la tâche</label><input name="title" required placeholder="Ex. Changement d’eau"><div class="formgrid"><div><label>Échéance</label><input name="due" type="date" value="${today()}" required></div><div><label>Répétition</label><select name="repeat"><option value="">Aucune</option><option value="7">Tous les 7 jours</option><option value="14">Tous les 14 jours</option><option value="30">Tous les 30 jours</option><option value="90">Tous les 90 jours</option></select></div><div class="full"><label>Notes</label><textarea name="notes" rows="2"></textarea></div></div><button style="margin-top:15px;width:100%">Créer l’entretien</button></form>`)}
+function saveTask(e){e.preventDefault();let f=new FormData(e.target);state.tasks.push({id:crypto.randomUUID(),aquariumId:f.get('aquariumId'),title:f.get('title'),due:f.get('due'),repeat:f.get('repeat'),notes:f.get('notes'),done:false});save();closeModal();render()}
+function completeTask(id){let t=state.tasks.find(x=>x.id===id);if(!t)return;t.done=true;if(t.repeat){let d=new Date(t.due+'T12:00:00');d.setDate(d.getDate()+Number(t.repeat));state.tasks.push({...t,id:crypto.randomUUID(),due:d.toISOString().slice(0,10),done:false})}save();render()}
+function undoTask(id){let t=state.tasks.find(x=>x.id===id);if(t)t.done=false;save();render()}
+function deleteTask(id){if(!confirm('Supprimer cet entretien ?'))return;state.tasks=state.tasks.filter(t=>t.id!==id);save();render()}
+function exportData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='aquamanager-sauvegarde-'+today()+'.json';a.click();URL.revokeObjectURL(url)}
+function importData(){let file=document.getElementById('import-file').files[0];if(!file){alert('Choisis un fichier JSON.');return}let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.aquariums)||!Array.isArray(d.tasks))throw Error();if(confirm('Remplacer les données actuelles par cette sauvegarde ?')){state=d;save();render();alert('Sauvegarde importée.')}}catch(e){alert('Fichier invalide ou incompatible.')}};r.readAsText(file)}
+function seedDemo(){if(!confirm('Remplacer les données actuelles par les données de démonstration ?'))return;state=demo();save();render();go('home')}
+load();render();
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>

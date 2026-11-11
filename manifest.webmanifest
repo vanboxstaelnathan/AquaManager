@@ -1,0 +1,10 @@
+{
+  "name": "AquaManager",
+  "short_name": "AquaManager",
+  "lang": "fr-BE",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0b1720",
+  "theme_color": "#0b1720",
+  "description": "Suivi de tes aquariums, paramètres d'eau et entretiens."
+}
